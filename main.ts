@@ -22,7 +22,10 @@ const target = join(outDir, 'entry.png');
 
 // Fail loudly rather than ship an invalid entry: the gate takes a whole
 // PNG or JPEG (told apart by its first bytes) of at most 1 MiB, so check
-// the asset's size and magic before copying it.
+// the asset's size and magic before copying it. The checks run before
+// the copy on purpose: a corrupt or oversized asset should fail the run
+// outright instead of landing in /output, where it would score zero
+// just the same but without telling anyone why.
 const MAX_BYTES = 1_048_576;
 const head = readFileSync(source).subarray(0, 3);
 const isPng = head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e;
